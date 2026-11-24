@@ -1,0 +1,5 @@
+Model,Total_Texts,plan_count,plan_pct,secret_count,secret_pct,in-group_count,in-group_pct,out-group_count,out-group_pct,call-to-action_count,call-to-action_pct
+8B Few-Shot,2660,1070,40.23,1108,41.65,184,6.92,844,31.73,113,4.25
+8B Few-Shot+Frames,2660,1133,42.59,1055,39.66,239,8.98,848,31.88,102,3.83
+70B Few-Shot,2660,1110,41.73,582,21.88,435,16.35,897,33.72,540,20.30
+70B Few-Shot+Frames,2660,1076,40.45,587,22.07,486,18.27,874,32.86,517,19.44

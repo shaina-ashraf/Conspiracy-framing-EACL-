@@ -1,0 +1,496 @@
+% Required package: \usepackage{listings}
+% This file uses lstlisting instead of verbatim to enable automatic line breaking
+% in two-column layouts, preventing text overflow issues.
+
+\section{Prompts} \label{app:prompt}
+
+% Configure lstlisting for verbatim-like appearance with line breaking
+\lstdefinestyle{verbatimstyle}{
+    basicstyle=\small\ttfamily,
+    breaklines=true,
+    breakatwhitespace=false,
+    columns=fullflexible,
+    keepspaces=true,
+    showstringspaces=false,
+    breakindent=0pt,
+    tabsize=2,
+    frame=none,
+    basewidth=0.51em
+}
+
+\subsection{Zero-Shot}
+\small
+
+\textbf{Role.} You are an expert annotator. For each Telegram message: return only JSON.
+
+\vspace{0.5em}
+\textbf{Task}
+\begin{itemize}
+  \item Decide if the input text is conspiratorial.
+  \item Provide a short rationale summarizing your decision.
+  \item Give a confidence score between 0 and 1 (inclusive, use decimals).
+  \item If conspiratorial, extract labeled spans.
+\end{itemize}
+
+\vspace{0.5em}
+\textbf{Definition}
+\begin{itemize}
+  \item \textbf{Conspiracy theory}: An event is the result of a group acting in secret according to a plan, causing harm to a group of victims. If not stopped, it leads to catastrophe, so action is urged.
+  \item A text is conspiratorial if there is at least one identifiable plan/event attributed to an out-group (may be implied) that harms an in-group (may be implied).
+  \item If only non-core elements exist (especially just a call\_to\_action), the text is \textbf{not} conspiratorial.
+\end{itemize}
+
+\vspace{0.5em}
+\textbf{Core Requirement}
+\begin{itemize}
+  \item When \texttt{is\_conspiratorial} is true, include at least one span labeled \texttt{plan\_event} or \texttt{secret}.
+\end{itemize}
+
+\vspace{0.5em}
+\textbf{Span Labels}
+\begin{itemize}
+  \item \texttt{plan\_event} (core): action/event/circumstance that constitutes the harmful plan.
+  \item \texttt{secret} (core): secrecy/hidden coordination cues (e.g., secret, covert, hidden agenda).
+  \item \texttt{out\_group} (optional): alleged perpetrators/enemy.
+  \item \texttt{in\_group} (optional): victims/``us''.
+  \item \texttt{call\_to\_action} (optional): imperative/prescription to counter the plan.
+\end{itemize}
+
+\vspace{0.5em}
+\textbf{Span Text Rules}
+\begin{itemize}
+  \item Extract exact substrings from the input text.
+  \item Do NOT include surrounding quotes or trailing punctuation in span text.
+  \item Span text must be continuous.
+  \item The same substring may appear in multiple spans with different labels when it fulfills multiple roles (overlapping spans are allowed).
+\end{itemize}
+
+\vspace{0.5em}
+\textbf{Output JSON Schema}
+\begin{lstlisting}[style=verbatimstyle]
+{
+  "is_conspiratorial": boolean,
+  "rationale_short": string,
+  "confidence": number,
+  "spans": [
+    {
+      "label": "plan_event" | "secret" | "out_group" | "in_group" | "call_to_action",
+      "text": string
+    }
+  ]
+}
+\end{lstlisting}
+
+\vspace{0.5em}
+\textbf{Input}
+\begin{lstlisting}[style=verbatimstyle]
+{{INPUT_TEXT}}
+\end{lstlisting}
+
+\vspace{0.5em}
+\textbf{Output}
+Return only the JSON.
+
+
+\subsection{Few-shot}
+\small
+
+\textbf{Role.} You are an expert annotator. For each Telegram message: return only JSON.
+
+\vspace{0.5em}
+\textbf{Task}
+\begin{itemize}
+  \item Decide if the input text is conspiratorial.
+  \item Provide a short rationale summarizing your decision.
+  \item Give a confidence score between 0 and 1 (inclusive, use decimals).
+  \item If conspiratorial, extract labeled spans.
+\end{itemize}
+
+\vspace{0.5em}
+\textbf{Definition}
+\begin{itemize}
+  \item \textbf{Conspiracy theory}: An event is the result of a group acting in secret according to a plan, causing harm to a group of victims. If not stopped, it leads to catastrophe, so action is urged.
+  \item A text is conspiratorial if there is at least one identifiable plan/event attributed to an out-group (may be implied) that harms an in-group (may be implied).
+  \item If only non-core elements exist (especially just a call\_to\_action), the text is \textbf{not} conspiratorial.
+\end{itemize}
+
+\vspace{0.5em}
+\textbf{Core Requirement}
+\begin{itemize}
+  \item When \texttt{is\_conspiratorial} is true, include at least one span labeled \texttt{plan\_event} or \texttt{secret}.
+\end{itemize}
+
+\vspace{0.5em}
+\textbf{Span Labels}
+\begin{itemize}
+  \item \texttt{plan\_event} (core): action/event/circumstance that constitutes the harmful plan.
+  \item \texttt{secret} (core): secrecy/hidden coordination cues (e.g., secret, covert, hidden agenda).
+  \item \texttt{out\_group} (optional): alleged perpetrators/enemy.
+  \item \texttt{in\_group} (optional): victims/``us''.
+  \item \texttt{call\_to\_action} (optional): imperative/prescription to counter the plan.
+\end{itemize}
+
+\vspace{0.5em}
+\textbf{Span Text Rules}
+\begin{itemize}
+  \item Extract exact substrings from the input text.
+  \item Do NOT include surrounding quotes or trailing punctuation in span text.
+  \item Span text must be continuous.
+  \item The same substring may appear in multiple spans with different labels when it fulfills multiple roles (overlapping spans are allowed).
+\end{itemize}
+
+\vspace{0.5em}
+\textbf{Output JSON Schema}
+\begin{lstlisting}[style=verbatimstyle]
+{
+  "is_conspiratorial": boolean,
+  "rationale_short": string,
+  "confidence": number,
+  "spans": [
+    {
+      "label": "plan_event" | "secret" | "out_group" | "in_group" | "call_to_action",
+      "text": string
+    }
+  ]
+}
+\end{lstlisting}
+
+\vspace{0.5em}
+\textbf{Few-shot Examples}
+
+\textbf{Example 1 (Conspiratorial — plan\_event + out\_group + in\_group)}
+\begin{lstlisting}[style=verbatimstyle]
+Input: 
+Influence Operation Relied on Influencers, AI-Generated Content, Paid Social Media Advertisements, and Social Media Accounts to Drive Internet Traffic to Cybersquatted and Other Domains
+
+The Justice Department today announced the ongoing seizure of 32 internet domains used in Russian government-directed foreign malign influence campaigns colloquially referred to as "Doppelganger," in violation of U.S. money laundering and criminal trademark laws. As alleged in an unsealed affidavit, the Russian companies Social Design Agency (SDA), Structura National Technology (Structura), and ANO Dialog, operating under the direction and control of the Russian Presidential Administration, and in particular First Deputy Chief of Staff of the Presidential Executive Office Sergei Vladilenovich Kiriyenko, used these domains, among others, to covertly spread Russian government propaganda with the aim of reducing international support for Ukraine, bolstering pro-Russian policies and interests, and influencing voters in U.S. and foreign elections, including the U.S. 2024 Presidential Election.
+
+Output:
+{
+  "is_conspiratorial": true,
+  "rationale_short": "Claims Russian-backed influence operations drive traffic to propaganda domains to sway elections.",
+  "confidence": 0.83,
+  "spans": [
+    { "label": "plan_event", "text": "Drive Internet Traffic to Cybersquatted and Other Domains" },
+    { "label": "out_group", "text": "Russian government" },
+    { "label": "in_group", "text": "U.S." }
+  ]
+}
+\end{lstlisting}
+
+\textbf{Example 2 (Conspiratorial — multiple plan\_events + secret + out\_group)}
+\begin{lstlisting}[style=verbatimstyle]
+Input:
+Jewish German Government -
+
+"You can be thankful we let the third world in making your cities more unsafe... you can be thankful we turn your children gay and punish you for speaking out against immigration and the holohoax.  Now we will light up the Brandenburg Gate with the satanic star of Remphan to show you who rules over you.  Please be stupid and buy into our tears for help one more time."
+
+People everywhere will start learning what these savages do to the Palestinians. Support for Israel will only decline until they seem to be the last ones cheering themselves on.
+
+Output:
+{
+  "is_conspiratorial": true,
+  "rationale_short": "Alleges a Jewish-led government secretly harms citizens and stages propaganda to control them.",
+  "confidence": 0.80,
+  "spans": [
+    { "label": "plan_event", "text": "punish you for speaking out against immigration and the holohoax" },
+    { "label": "plan_event", "text": "light up the Brandenburg Gate with the satanic star of Remphan" },
+    { "label": "secret", "text": "buy into" },
+    { "label": "out_group", "text": "Jewish German Government" },
+    { "label": "out_group", "text": "savages" }
+  ]
+}
+\end{lstlisting}
+
+\textbf{Example 3 (Conspiratorial — plan\_event + secret, policy focus)}
+\begin{lstlisting}[style=verbatimstyle]
+Input:
+⚖️  "Courts will sit for 24 hours to fast-track sentencing under government plans to crack down on far-Right riots that swept Britain on Saturday"
+
+ : Funny they can't do the same with illegals.
+
+Output:
+{
+  "is_conspiratorial": true,
+  "rationale_short": "Claims the government secretly targets far-right activists while protecting illegal immigrants.",
+  "confidence": 0.72,
+  "spans": [
+    { "label": "plan_event", "text": "government plans to crack down on far-Right riots" },
+    { "label": "plan_event", "text": "can't do the same with illegals" },
+    { "label": "secret", "text": "they can't do the same with illegals" },
+    { "label": "in_group", "text": "far-Right riots" }
+  ]
+}
+\end{lstlisting}
+
+\textbf{Example 4 (Conspiratorial — plan\_event + in\_group + call\_to\_action)}
+\begin{lstlisting}[style=verbatimstyle]
+Input:
+Texans are known for their resilience and ability to persevere in the face of adversity. From enduring harsh weather conditions like hurricanes and droughts to facing racial demographic challenges, Texans have shown time and time again that they are a tough and resilient people. Their strong sense of community and willingness to help one another in times of need is a testament to their unwavering spirit. Despite facing numerous obstacles, Texans always find a way to come together, support each other, and rebuild stronger than before, as evidenced by the reformation of WLM Texas. This resilience is ingrained in the Texan spirit and serves as a source of inspiration for others facing similar challenges. 
+If you're a White man or woman in the state of Texas, reach out. The community and system of support you've been looking for is right here.
+
+Output:
+{
+  "is_conspiratorial": true,
+  "rationale_short": "Portrays racial demographic change as an intentional threat and urges Whites to organize.",
+  "confidence": 0.69,
+  "spans": [
+    { "label": "plan_event", "text": "racial demographic challenges" },
+    { "label": "in_group", "text": "White man or woman" },
+    { "label": "call_to_action", "text": "always find a way to come together, support each other, and rebuild stronger than before" }
+  ]
+}
+\end{lstlisting}
+
+\textbf{Example 5 (Not conspiratorial — neutral coordination request)}
+\begin{lstlisting}[style=verbatimstyle]
+Input:
+Hey guys, we're trying to get this community noted. 
+
+Can everyone please tag   in the comments and correct us.
+
+Output:
+{
+  "is_conspiratorial": false,
+  "rationale_short": "Asks followers to tag accounts; no secret plan or coordinated harm is described.",
+  "confidence": 0.24,
+  "spans": []
+}
+\end{lstlisting}
+
+\textbf{Example 6 (Not conspiratorial — supportive tone only)}
+\begin{lstlisting}[style=verbatimstyle]
+Input:
+Someone should comment this under Elon Musks Comment he made about Haiti.
+
+In fact... most of you should clip parts of this and paste this link below so everyone can watch it all over twitter. Everyone is wondering why they eat people... maybe this will enlighten them a bit. Scientific brain IQ and brain measurements are also useful to post.
+
+Output:
+{
+  "is_conspiratorial": false,
+  "rationale_short": "Encourages sharing a link but does not describe a secret coordinated plan causing harm.",
+  "confidence": 0.31,
+  "spans": []
+}
+\end{lstlisting}
+
+\vspace{0.5em}
+\textbf{Input}
+\begin{lstlisting}[style=verbatimstyle]
+{{INPUT_TEXT}}
+\end{lstlisting}
+
+\vspace{0.5em}
+\textbf{Output}
+Return only the JSON.
+
+
+\subsection{Frame-guided}
+\small
+
+\textbf{Role.} You are an expert annotator. For each Telegram message: return only JSON.
+
+\vspace{0.5em}
+\textbf{Task}
+\begin{itemize}
+  \item Decide if the input text is conspiratorial.
+  \item Provide a short rationale summarizing your decision.
+  \item Give a confidence score between 0 and 1 (inclusive, use decimals).
+  \item If conspiratorial, extract labeled spans.
+\end{itemize}
+
+\vspace{0.5em}
+\textbf{Definition}
+\begin{itemize}
+  \item \textbf{Conspiracy theory}: An event is the result of a group acting in secret according to a plan, causing harm to a group of victims. If not stopped, it leads to catastrophe, so action is urged.
+  \item A text is conspiratorial if there is at least one identifiable plan/event attributed to an out-group (may be implied) that harms an in-group (may be implied).
+  \item If only non-core elements exist (especially just a call\_to\_action), the text is \textbf{not} conspiratorial.
+\end{itemize}
+
+\vspace{0.5em}
+\textbf{Core Requirement}
+\begin{itemize}
+  \item When \texttt{is\_conspiratorial} is true, include at least one span labeled \texttt{plan\_event} or \texttt{secret}.
+\end{itemize}
+
+\vspace{0.5em}
+\textbf{Span Labels}
+\begin{itemize}
+  \item \texttt{plan\_event} (core): action/event/circumstance that constitutes the harmful plan.
+  \item \texttt{secret} (core): secrecy/hidden coordination cues (e.g., secret, covert, hidden agenda).
+  \item \texttt{out\_group} (optional): alleged perpetrators/enemy.
+  \item \texttt{in\_group} (optional): victims/``us''.
+  \item \texttt{call\_to\_action} (optional): imperative/prescription to counter the plan.
+\end{itemize}
+
+\vspace{0.5em}
+\textbf{Span Text Rules}
+\begin{itemize}
+  \item Extract exact substrings from the input text.
+  \item Do NOT include surrounding quotes or trailing punctuation in span text.
+  \item Span text must be continuous.
+  \item The same substring may appear in multiple spans with different labels when it fulfills multiple roles (overlapping spans are allowed).
+\end{itemize}
+
+\vspace{0.5em}
+\textbf{Frame Hints}
+Some examples include frame hints for core spans (\texttt{plan\_event}, \texttt{secret}). These are provided to give you extra context but should \textbf{not} be added to the JSON output.
+
+\vspace{0.5em}
+\textbf{Output JSON Schema}
+\begin{lstlisting}[style=verbatimstyle]
+{
+  "is_conspiratorial": boolean,
+  "rationale_short": string,
+  "confidence": number,
+  "spans": [
+    {
+      "label": "plan_event" | "secret" | "out_group" | "in_group" | "call_to_action",
+      "text": string
+    }
+  ]
+}
+\end{lstlisting}
+
+\vspace{0.5em}
+\textbf{Few-shot Examples}
+
+\textbf{Example 1 (Conspiratorial — plan\_event + out\_group + in\_group)}
+\begin{lstlisting}[style=verbatimstyle]
+Input: 
+Influence Operation Relied on Influencers, AI-Generated Content, Paid Social Media Advertisements, and Social Media Accounts to Drive Internet Traffic to Cybersquatted and Other Domains
+
+The Justice Department today announced the ongoing seizure of 32 internet domains used in Russian government-directed foreign malign influence campaigns colloquially referred to as "Doppelganger," in violation of U.S. money laundering and criminal trademark laws. As alleged in an unsealed affidavit, the Russian companies Social Design Agency (SDA), Structura National Technology (Structura), and ANO Dialog, operating under the direction and control of the Russian Presidential Administration, and in particular First Deputy Chief of Staff of the Presidential Executive Office Sergei Vladilenovich Kiriyenko, used these domains, among others, to covertly spread Russian government propaganda with the aim of reducing international support for Ukraine, bolstering pro-Russian policies and interests, and influencing voters in U.S. and foreign elections, including the U.S. 2024 Presidential Election.
+
+Frame hints:
+- plan_event: Self_motion, Subjective_influence, Bringing, Cause_motion, Operate_vehicle
+
+Output:
+{
+  "is_conspiratorial": true,
+  "rationale_short": "Claims Russian-backed influence operations drive traffic to propaganda domains to sway elections.",
+  "confidence": 0.83,
+  "spans": [
+    { "label": "plan_event", "text": "Drive Internet Traffic to Cybersquatted and Other Domains" },
+    { "label": "out_group", "text": "Russian government" },
+    { "label": "in_group", "text": "U.S." }
+  ]
+}
+\end{lstlisting}
+
+\textbf{Example 2 (Conspiratorial — multiple plan\_events + secret + out\_group)}
+\begin{lstlisting}[style=verbatimstyle]
+Input:
+Jewish German Government -
+
+"You can be thankful we let the third world in making your cities more unsafe... you can be thankful we turn your children gay and punish you for speaking out against immigration and the holohoax.  Now we will light up the Brandenburg Gate with the satanic star of Remphan to show you who rules over you.  Please be stupid and buy into our tears for help one more time."
+
+People everywhere will start learning what these savages do to the Palestinians. Support for Israel will only decline until they seem to be the last ones cheering themselves on.
+
+Frame hints:
+- plan_event: Rewards_and_punishments, Statement, Chatting, Color_qualities, Setting_fire
+- secret: Commerce_buy
+
+Output:
+{
+  "is_conspiratorial": true,
+  "rationale_short": "Alleges a Jewish-led government secretly harms citizens and stages propaganda to control them.",
+  "confidence": 0.80,
+  "spans": [
+    { "label": "plan_event", "text": "punish you for speaking out against immigration and the holohoax" },
+    { "label": "plan_event", "text": "light up the Brandenburg Gate with the satanic star of Remphan" },
+    { "label": "secret", "text": "buy into" },
+    { "label": "out_group", "text": "Jewish German Government" },
+    { "label": "out_group", "text": "savages" }
+  ]
+}
+\end{lstlisting}
+
+\textbf{Example 3 (Conspiratorial — plan\_event + secret, policy focus)}
+\begin{lstlisting}[style=verbatimstyle]
+Input:
+⚖️  "Courts will sit for 24 hours to fast-track sentencing under government plans to crack down on far-Right riots that swept Britain on Saturday"
+
+ : Funny they can't do the same with illegals.
+
+Frame hints:
+- plan_event: Leadership, Organization, Project, Purpose, Making_arrangements
+- secret: Intentionally_act, Legality, Identicality, Thriving, Intentionally_affect
+
+Output:
+{
+  "is_conspiratorial": true,
+  "rationale_short": "Claims the government secretly targets far-right activists while protecting illegal immigrants.",
+  "confidence": 0.72,
+  "spans": [
+    { "label": "plan_event", "text": "government plans to crack down on far-Right riots" },
+    { "label": "plan_event", "text": "can't do the same with illegals" },
+    { "label": "secret", "text": "they can't do the same with illegals" },
+    { "label": "in_group", "text": "far-Right riots" }
+  ]
+}
+\end{lstlisting}
+
+\textbf{Example 4 (Conspiratorial — plan\_event + in\_group + call\_to\_action)}
+\begin{lstlisting}[style=verbatimstyle]
+Input:
+Texans are known for their resilience and ability to persevere in the face of adversity. From enduring harsh weather conditions like hurricanes and droughts to facing racial demographic challenges, Texans have shown time and time again that they are a tough and resilient people. Their strong sense of community and willingness to help one another in times of need is a testament to their unwavering spirit. Despite facing numerous obstacles, Texans always find a way to come together, support each other, and rebuild stronger than before, as evidenced by the reformation of WLM Texas. This resilience is ingrained in the Texan spirit and serves as a source of inspiration for others facing similar challenges. 
+If you're a White man or woman in the state of Texas, reach out. The community and system of support you've been looking for is right here.
+
+Frame hints:
+- plan_event: Statement, Competition, Difficulty
+
+Output:
+{
+  "is_conspiratorial": true,
+  "rationale_short": "Portrays racial demographic change as an intentional threat and urges Whites to organize.",
+  "confidence": 0.69,
+  "spans": [
+    { "label": "plan_event", "text": "racial demographic challenges" },
+    { "label": "in_group", "text": "White man or woman" },
+    { "label": "call_to_action", "text": "always find a way to come together, support each other, and rebuild stronger than before" }
+  ]
+}
+\end{lstlisting}
+
+\textbf{Example 5 (Not conspiratorial — neutral coordination request)}
+\begin{lstlisting}[style=verbatimstyle]
+Input:
+Hey guys, we're trying to get this community noted. 
+
+Can everyone please tag   in the comments and correct us.
+
+Output:
+{
+  "is_conspiratorial": false,
+  "rationale_short": "Asks followers to tag accounts; no secret plan or coordinated harm is described.",
+  "confidence": 0.24,
+  "spans": []
+}
+\end{lstlisting}
+
+\textbf{Example 6 (Not conspiratorial — supportive tone only)}
+\begin{lstlisting}[style=verbatimstyle]
+Input:
+Someone should comment this under Elon Musks Comment he made about Haiti.
+
+In fact... most of you should clip parts of this and paste this link below so everyone can watch it all over twitter. Everyone is wondering why they eat people... maybe this will enlighten them a bit. Scientific brain IQ and brain measurements are also useful to post.
+
+Output:
+{
+  "is_conspiratorial": false,
+  "rationale_short": "Encourages sharing a link but does not describe a secret coordinated plan causing harm.",
+  "confidence": 0.31,
+  "spans": []
+}
+\end{lstlisting}
+
+\vspace{0.5em}
+\textbf{Input}
+\begin{lstlisting}[style=verbatimstyle]
+{{INPUT_TEXT}}
+\end{lstlisting}
+
+\vspace{0.5em}
+\textbf{Output}
+Return only the JSON.

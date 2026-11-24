@@ -1,0 +1,10 @@
+Pairwise Cohen's Kappa Agreement Summary
+==================================================
+
+Mean Kappa: 0.4144
+Median Kappa: 0.4646
+Standard Deviation: 0.1970
+Min Kappa: 0.0593
+Max Kappa: 0.7167
+
+Total Pairs: 13

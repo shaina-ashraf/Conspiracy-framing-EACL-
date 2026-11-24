@@ -1,0 +1,28 @@
+.DS_Store
+
+# Python/runtime artifacts
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# Editor/local state
+.vscode/
+.idea/
+
+# Project data and generated outputs kept off GitHub
+Data/
+outputs/
+logs/
+plots/
+output.png
+
+# Large model/cache artifacts
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.gguf
+*.ckpt
+.cache/

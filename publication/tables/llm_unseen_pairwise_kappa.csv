@@ -1,0 +1,7 @@
+Model_1,Model_2,Kappa,N_Texts
+70B Few-Shot,70B Few-Shot+Frames,0.9605,2660
+8B Few-Shot,8B Few-Shot+Frames,0.9219,2660
+8B Few-Shot,70B Few-Shot,0.6621,2660
+8B Few-Shot,70B Few-Shot+Frames,0.6602,2660
+8B Few-Shot+Frames,70B Few-Shot+Frames,0.6597,2660
+8B Few-Shot+Frames,70B Few-Shot,0.6566,2660

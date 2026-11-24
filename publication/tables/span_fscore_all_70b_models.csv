@@ -1,0 +1,16 @@
+Model,Span_Type,Precision,Recall,F1,N_Human_Spans,N_Model_Spans,N_Matched
+70B Few-Shot,plan,0.7975,0.6581,0.7211,778,642,512
+70B Few-Shot+Frames,plan,0.7952,0.6440,0.7116,778,630,501
+70B Zero-Shot,plan,0.8907,0.5758,0.6995,778,503,448
+70B Few-Shot,secret,0.7762,0.5801,0.6640,281,210,163
+70B Few-Shot+Frames,secret,0.8020,0.5765,0.6708,281,202,162
+70B Zero-Shot,secret,0.7692,0.3559,0.4866,281,130,100
+70B Few-Shot,in-group,0.9306,0.4524,0.6088,504,245,228
+70B Few-Shot+Frames,in-group,0.9358,0.4921,0.6450,504,265,248
+70B Zero-Shot,in-group,0.9714,0.4048,0.5714,504,210,204
+70B Few-Shot,out-group,0.8636,0.7658,0.8118,521,462,399
+70B Few-Shot+Frames,out-group,0.8747,0.7370,0.8000,521,439,384
+70B Zero-Shot,out-group,0.8732,0.7006,0.7774,521,418,365
+70B Few-Shot,call-to-action,0.6856,0.8303,0.7510,218,264,181
+70B Few-Shot+Frames,call-to-action,0.7016,0.8303,0.7605,218,258,181
+70B Zero-Shot,call-to-action,0.5621,0.9128,0.6958,218,354,199

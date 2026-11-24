@@ -1,0 +1,5 @@
+Model,Total,Conspiratorial,Non-Conspiratorial,Conspiratorial_%
+8B Few-Shot,2660,1191,1469,44.77
+8B Few-Shot+Frames,2660,1226,1434,46.09
+70B Few-Shot,2660,1119,1541,42.07
+70B Few-Shot+Frames,2660,1080,1580,40.60

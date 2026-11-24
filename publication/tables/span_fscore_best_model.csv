@@ -1,0 +1,6 @@
+Span_Type,Precision,Recall,F1,N_Human_Spans,N_Model_Spans,N_Matched
+plan,0.8907,0.5758,0.6995,778,503,448
+secret,0.7692,0.3559,0.4866,281,130,100
+in-group,0.9714,0.4048,0.5714,504,210,204
+out-group,0.8732,0.7006,0.7774,521,418,365
+call-to-action,0.5621,0.9128,0.6958,218,354,199

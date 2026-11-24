@@ -1,0 +1,17 @@
+\begin{table*}[t]
+\centering
+\caption{Span-Level F-Score Analysis: All 70B Models vs Human Annotations}
+\label{tab:span_fscore_all_70b}
+\begin{tabular}{lccccccccc}
+\toprule
+Span Type & \multicolumn{3}{c}{Zero-Shot} & \multicolumn{3}{c}{Few-Shot} & \multicolumn{3}{c}{Few-Shot+Frames} \\
+ & P & R & F1 &P & R & F1 &P & R & F1 \\
+\midrule
+plan & 0.8907 & 0.5758 & 0.6995 & 0.7975 & 0.6581 & 0.7211 & 0.7952 & 0.6440 & 0.7116 \\
+secret & 0.7692 & 0.3559 & 0.4866 & 0.7762 & 0.5801 & 0.6640 & 0.8020 & 0.5765 & 0.6708 \\
+in\textendash group & 0.9714 & 0.4048 & 0.5714 & 0.9306 & 0.4524 & 0.6088 & 0.9358 & 0.4921 & 0.6450 \\
+out\textendash group & 0.8732 & 0.7006 & 0.7774 & 0.8636 & 0.7658 & 0.8118 & 0.8747 & 0.7370 & 0.8000 \\
+call\textendash to\textendash action & 0.5621 & 0.9128 & 0.6958 & 0.6856 & 0.8303 & 0.7510 & 0.7016 & 0.8303 & 0.7605 \\
+\bottomrule
+\end{tabular}
+\end{table*}

@@ -1,0 +1,510 @@
+\section{Prompts} \label{app:prompt}
+
+\subsection{Zero-Shot}
+\small
+
+\textbf{Role.} You are an expert annotator. For each Telegram message: return only JSON.
+
+\vspace{0.5em}
+\textbf{Task}
+\textbf{Task}
+\begin{itemize}
+  \item Decide if the input text is conspiratorial.
+  \item If conspiratorial, extract labeled spans.
+\end{itemize}
+
+\vspace{0.5em}
+\textbf{Definition}
+\begin{itemize}
+  \item \textbf{Conspiracy theory}: An event is the result of a group of people acting in secret according to a plan, causing harm to a group of victims. If not stopped, this plan/event will lead to catastrophe, therefore actions need to be taken.
+  \item Text is conspiratorial if there is at least a plan/event that is the fault of an out-group (may be implied) and harms an in-group (may be implied). The plan/event must be identifiable.
+  \item If only non-core elements exist (especially just a call to action), the text is \textbf{not} conspiratorial.
+\end{itemize}
+
+\vspace{0.5em}
+\textbf{Core Requirement}
+\begin{itemize}
+  \item At least one of: \texttt{plan\_event} or \texttt{secret} (mandatory when \texttt{is\_conspiratorial=true}).
+\end{itemize}
+
+\vspace{0.5em}
+\textbf{Span Labels}
+\begin{itemize}
+  \item \texttt{plan\_event} (core): action/event/circumstance that constitutes the plan leading to harm.
+  \item \texttt{secret} (core): secrecy or hidden coordination cues (e.g., secret, covert, hidden agenda).
+  \item \texttt{out\_group} (optional): alleged perpetrators/enemy/oppressors.
+  \item \texttt{in\_group} (optional): victims or oppressed group.
+  \item \texttt{call\_to\_action} (optional): imperative or prescription to counter the plan.
+\end{itemize}
+
+\vspace{0.5em}
+\textbf{Span Text Rules}
+\begin{itemize}
+  \item Extract the exact substring(s) corresponding to each element.
+  \item Do not include surrounding quotes or trailing punctuation.
+  \item Each span must be a continuous substring from the input text.
+\end{itemize}
+
+\vspace{0.5em}
+\textbf{Output JSON Schema}
+\begin{verbatim}
+{
+  "is_conspiratorial": boolean,
+  "supports_conspiracy": boolean,
+  "rationale_short": string,
+  "confidence": number,
+  "spans": [
+    { "label": "plan_event" | "secret" |
+               "out_group" | "in_group" |
+               "call_to_action",
+      "text": string }
+  ]
+}
+\end{verbatim}
+
+\vspace{0.5em}
+\textbf{Input}
+\begin{verbatim}
+{{INPUT_TEXT}}
+\end{verbatim}
+
+\vspace{0.5em}
+\textbf{Output}
+Return only the JSON.
+
+
+\subsection{Few-shot}
+\small
+
+\textbf{Role.} You are an expert annotator. For each Telegram message: return only JSON.
+
+\vspace{0.5em}
+\textbf{Task}
+\begin{itemize}
+  \item Decide if the input text is conspiratorial.
+  \item If conspiratorial, extract labeled spans.
+\end{itemize}
+
+\vspace{0.5em}
+\textbf{Definition}
+\begin{itemize}
+  \item \textbf{Conspiracy theory}: An event is the result of a group of people acting in secret according to a plan, causing harm to a group of victims. If not stopped, this plan/event will lead to catastrophe, therefore actions need to be taken.
+  \item Text is conspiratorial if there is at least a plan/event that is the fault of an out-group (may be implied) and harms an in-group (may be implied). The plan/event must be identifiable.
+  \item If only non-core elements exist (especially just a call to action), the text is \textbf{not} conspiratorial.
+\end{itemize}
+
+\vspace{0.5em}
+\textbf{Core Requirement}
+\begin{itemize}
+  \item At least one of: \texttt{plan\_event} or \texttt{secret} (mandatory when \texttt{is\_conspiratorial=true}).
+\end{itemize}
+
+\vspace{0.5em}
+\textbf{Span Labels}
+\begin{itemize}
+  \item \texttt{plan\_event} (core): action, event, or circumstance that constitutes the plan leading to harm.
+  \item \texttt{secret} (core): secrecy or hidden coordination cues (e.g., secret, covert, hidden agenda).
+  \item \texttt{out\_group} (optional): alleged perpetrators or enemy.
+  \item \texttt{in\_group} (optional): victims or ``us''.
+  \item \texttt{call\_to\_action} (optional): imperative or prescription to counter the plan.
+\end{itemize}
+
+\vspace{0.5em}
+\textbf{Span Text Rules}
+\begin{itemize}
+  \item Extract the exact substring(s) corresponding to each element.
+  \item Do not include surrounding quotes or trailing punctuation.
+  \item Each span must be a continuous substring from the input text.
+\end{itemize}
+
+\vspace{0.5em}
+\textbf{Output JSON Schema}
+\begin{verbatim}
+{
+  "is_conspiratorial": boolean,
+  "supports_conspiracy": boolean,
+  "rationale_short": string,
+  "confidence": number,
+  "spans": [
+    { "label": "plan_event" | "secret" |
+               "out_group" | "in_group" |
+               "call_to_action",
+      "text": string }
+  ]
+}
+\end{verbatim}
+
+\vspace{0.5em}
+\textbf{Few-shot Examples}
+
+\textbf{Example 1 (Conspiratorial — plan\_event + out\_group + in\_group)}
+\begin{verbatim}
+Input: Forced vaccination is being institutionalized by the authorities,
+       to profit from and control the population.
+Output:
+{
+  "is_conspiratorial": true,
+  "supports_conspiracy": false,
+  "spans": [
+    { "label": "plan_event",
+      "text": "Forced vaccination is being insti-
+      tutionalized" },
+    { "label": "out_group", "text": "the autho-
+    rities" },
+    { "label": "plan_event", "text": "profit from
+    and control" },
+    { "label": "in_group", "text": "the popula-
+    tion" }
+  ]
+}
+\end{verbatim}
+
+\textbf{Example 2 (Conspiratorial — multiple plan\_events + groups)}
+\begin{verbatim}
+Input: Multicultural policies increase immigra-
+tion, serving to replace
+       all Christian white people with Muslims,
+       and turning Europe into
+       a colony of Islam.
+Output:
+{
+  "is_conspiratorial": true,
+  "supports_conspiracy": false,
+  "spans": [
+    { "label": "plan_event",
+      "text": "Multicultural policies increase
+      immigration" },
+    { "label": "plan_event", "text": "replace" },
+    { "label": "in_group", "text": "Christian 
+    white people" },
+    { "label": "out_group", "text": "Muslims" },
+    { "label": "plan_event",
+      "text": "turning Europe into a colony of 
+      Islam" }
+  ]
+}
+\end{verbatim}
+
+\textbf{Example 3 (Conspiratorial — rhetorical + CTA)}
+\begin{verbatim}
+Input: As enemies of Our Folk are continuing to
+use destruction, we use
+       creation to build bridges amongst local
+       activists. When will YOU
+       stand up & join the fight?!
+Output:
+{
+  "is_conspiratorial": true,
+  "supports_conspiracy": false,
+  "spans": [
+    { "label": "out_group", "text": "enemies" },
+    { "label": "in_group", "text": "Our Folk" },
+    { "label": "plan_event", "text": "use destruc-
+    tion" },
+    { "label": "call_to_action",
+      "text": "stand up & join the fight" }
+  ]
+}
+\end{verbatim}
+
+\textbf{Example 4 (Conspiratorial — rhetorical question)}
+\begin{verbatim}
+Input: Why are there entire Hispanic towns in rural
+western Wisconsin?
+       Why are you allowing an invasion?
+Output:
+{
+  "is_conspiratorial": true,
+  "supports_conspiracy": false,
+  "spans": [
+    { "label": "plan_event", "text": "invasion" }
+  ]
+}
+\end{verbatim}
+
+\textbf{Example 5 (Conspiratorial — keyword as plan\_event)}
+\begin{verbatim}
+Input: The Great Replacement is REAL and the me-
+dia is the ENEMY of the people.
+Output:
+{
+  "is_conspiratorial": true,
+  "supports_conspiracy": false,
+  "spans": [
+    { "label": "plan_event", "text": "The Great 
+    Replacement" },
+    { "label": "out_group", "text": "the media" },
+    { "label": "in_group", "text": "the people" }
+  ]
+}
+\end{verbatim}
+
+\textbf{Example 6 (Conspiratorial — secret + plan\_events)}
+\begin{verbatim}
+Input: Our hard earned money is being shipped 
+overseas to fund a money laundering scheme 
+packaged as protection for Ukraine's border.
+Output:
+{
+  "is_conspiratorial": true,
+  "supports_conspiracy": false,
+  "spans": [
+    { "label": "plan_event", "text": "shipped over-
+    seas" },
+    { "label": "plan_event",
+      "text": "fund a money laundering scheme" },
+    { "label": "secret",
+      "text": "packaged as protection for Ukraine’s bor-
+      der" }
+  ]
+}
+\end{verbatim}
+
+\textbf{Example 7 (Supportive, not conspiratorial)}
+\begin{verbatim}
+Input: White birthrates are under sustainment levels.
+Output:
+{
+  "is_conspiratorial": false,
+  "supports_conspiracy": true,
+  "spans": []
+}
+\end{verbatim}
+
+\textbf{Example 8 (Supportive, not conspiratorial)}
+\begin{verbatim}
+Input: It's weird how all these crises always seem to
+benefit the globalists, don't you think?
+Output:
+{
+  "is_conspiratorial": false,
+  "supports_conspiracy": true,
+  "spans": []
+}
+\end{verbatim}
+
+\vspace{0.5em}
+\textbf{Input}
+\begin{verbatim}
+{{INPUT_TEXT}}
+\end{verbatim}
+
+\vspace{0.5em}
+\textbf{Output}
+Return only the JSON.
+
+
+\subsection{Frame-guided}
+\small
+
+\textbf{Role.} You are an expert annotator. For each Telegram message: return only JSON.
+
+\vspace{0.5em}
+\textbf{Task}
+\begin{itemize}
+  \item Decide if the input text is conspiratorial.
+  \item Provide a short rationale summarizing your decision.
+  \item Give a confidence score between 0 and 1 (inclusive, use decimals).
+  \item If conspiratorial, extract labeled spans.
+\end{itemize}
+
+\vspace{0.5em}
+\textbf{Definition}
+\begin{itemize}
+  \item \textbf{Conspiracy theory}: An event is the result of a group acting in secret according to a plan, causing harm to a group of victims. If not stopped, it leads to catastrophe, so action is urged.
+  \item A text is conspiratorial if there is at least one identifiable plan or event attributed to an out-group (may be implied) that harms an in-group (may be implied).
+  \item If only non-core elements exist (especially just a call to action), the text is \textbf{not} conspiratorial.
+\end{itemize}
+
+\vspace{0.5em}
+\textbf{Core Requirement}
+\begin{itemize}
+  \item When \texttt{is\_conspiratorial} is true, include at least one span labeled \texttt{plan\_event} or \texttt{secret}.
+\end{itemize}
+
+\vspace{0.5em}
+\textbf{Span Labels}
+\begin{itemize}
+  \item \texttt{plan\_event} (core): action, event, or circumstance that constitutes the harmful plan.
+  \item \texttt{secret} (core): secrecy or hidden coordination cues (e.g., secret, covert, hidden agenda).
+  \item \texttt{out\_group} (optional): alleged perpetrators or enemy.
+  \item \texttt{in\_group} (optional): victims or ``us''.
+  \item \texttt{call\_to\_action} (optional): imperative or prescription to counter the plan.
+\end{itemize}
+
+\vspace{0.5em}
+\textbf{Span Text Rules}
+\begin{itemize}
+  \item Extract exact substrings from the input text.
+  \item Do not include surrounding quotes or trailing punctuation.
+  \item Span text must be continuous.
+  \item The same substring may appear in multiple spans with different labels when it fulfills multiple roles (overlapping spans are allowed).
+\end{itemize}
+
+\vspace{0.5em}
+\textbf{Frame Hints}
+Some examples include frame hints for core spans (\texttt{plan\_event}, \texttt{secret}). These are provided for annotator context only and must \textbf{not} appear in the JSON output.
+
+\vspace{0.5em}
+\textbf{Output JSON Schema (all fields required)}
+\begin{verbatim}
+{
+  "is_conspiratorial": boolean,
+  "rationale_short": string,
+  "confidence": number,
+  "spans": [
+    {
+      "label": "plan_event" | "secret" |
+               "out_group" | "in_group" |
+               "call_to_action",
+      "text": string
+    }
+  ]
+}
+\end{verbatim}
+
+\vspace{0.5em}
+\textbf{Few-shot Examples}
+
+\textbf{Example 1 (Conspiratorial — plan\_event + out\_group + in\_group)}
+\begin{verbatim}
+Input:
+Influence Operation Relied on Influencers, AI-Generated 
+Content,
+Paid Social Media Advertisements, and Social Media Ac-
+counts to Drive
+Internet Traffic to Cybersquatted and Other Domains
+...
+Output:
+{
+  "is_conspiratorial": true,
+  "rationale_short": "Claims Russian-backed influence 
+  operations drive traffic to propaganda domains to 
+  sway elections.",
+  "confidence": 0.83,
+  "spans": [
+    { "label": "plan_event",
+      "text": "Drive Internet Traffic to Cybersquatted
+       sand Other Domains" },
+    { "label": "out_group", "text": "Russian government" },
+    { "label": "in_group", "text": "U.S." }
+  ]
+}
+\end{verbatim}
+
+\textbf{Example 2 (Conspiratorial — multiple plan\_events + secret)}
+\begin{verbatim}
+Input:
+Jewish German Government -
+"You can be thankful we let the third world in..."
+Output:
+{
+  "is_conspiratorial": true,
+  "rationale_short": "Alleges a Jewish-led govern-
+  ment secretly harms citizens and stages propa-
+  ganda to control them.",
+  "confidence": 0.80,
+  "spans": [
+    { "label": "plan_event",
+      "text": "punish you for speaking out against
+      immigration and the holohoax" },
+    { "label": "plan_event",
+      "text": "light up the Brandenburg Gate with
+      the satanic star of Remphan" },
+    { "label": "secret", "text": "buy into" },
+    { "label": "out_group", "text": "Jewish German
+    Government" },
+    { "label": "out_group", "text": "savages" }
+  ]
+}
+\end{verbatim}
+
+\textbf{Example 3 (Conspiratorial — policy focus)}
+\begin{verbatim}
+Input:
+Courts will sit for 24 hours to fast-track sentencing...
+Output:
+{
+  "is_conspiratorial": true,
+  "rationale_short": "Claims the government secretly
+  targets far-right activists while protecting il-
+  legal immigrants.",
+  "confidence": 0.72,
+  "spans": [
+    { "label": "plan_event",
+      "text": "government plans to crack down on
+      far-Right riots" },
+    { "label": "plan_event",
+      "text": "can't do the same with illegals" },
+    { "label": "secret",
+      "text": "they can't do the same with illegals" },
+    { "label": "in_group", "text": "far-Right riots" }
+  ]
+}
+\end{verbatim}
+
+\textbf{Example 4 (Conspiratorial — in\_group + CTA)}
+\begin{verbatim}
+Input:
+Texans are known for their resilience...
+Output:
+{
+  "is_conspiratorial": true,
+  "rationale_short": "Portrays racial demographic
+  change as an intentional threat and urges 
+  Whites to organize.",
+  "confidence": 0.69,
+  "spans": [
+    { "label": "plan_event", "text": "racial de-
+    mographic challenges" },
+    { "label": "in_group", "text": "White man 
+    or woman" },
+    { "label": "call_to_action",
+      "text": "always find a way to come to-
+      gether, support each other, and re-
+      build stronger than before" }
+  ]
+}
+\end{verbatim}
+
+\textbf{Example 5 (Not conspiratorial)}
+\begin{verbatim}
+Input:
+Hey guys, we're trying to get this community noted.
+Output:
+{
+  "is_conspiratorial": false,
+  "rationale_short": "Asks followers to tag 
+  accounts; no secret plan or coordinated 
+  harm is described.",
+  "confidence": 0.24,
+  "spans": []
+}
+\end{verbatim}
+
+\textbf{Example 6 (Not conspiratorial)}
+\begin{verbatim}
+Input:
+Someone should comment this under Elon Musks
+Comment...
+Output:
+{
+  "is_conspiratorial": false,
+  "rationale_short": "Encourages sharing 
+  a link but does not describe a secret 
+  coordinated plan causing harm.",
+  "confidence": 0.31,
+  "spans": []
+}
+\end{verbatim}
+
+\vspace{0.5em}
+\textbf{Input}
+\begin{verbatim}
+{{INPUT_TEXT}}
+\end{verbatim}
+
+\vspace{0.5em}
+\textbf{Output}
+Return only the JSON.
+

@@ -1,0 +1,17 @@
+\begin{table}[t]
+\centering
+\caption{Inter-Model Agreement (Cohen's Kappa) on Unseen Data}
+\label{tab:llm_unseen_pairwise_kappa}
+\begin{tabular}{lcc}
+\toprule
+Model 1 & Model 2 & Kappa \\
+\midrule
+70B Few-Shot & 70B Few-Shot+Frames & 0.9605 \\
+8B Few-Shot & 8B Few-Shot+Frames & 0.9219 \\
+8B Few-Shot & 70B Few-Shot & 0.6621 \\
+8B Few-Shot & 70B Few-Shot+Frames & 0.6602 \\
+8B Few-Shot+Frames & 70B Few-Shot+Frames & 0.6597 \\
+8B Few-Shot+Frames & 70B Few-Shot & 0.6566 \\
+\bottomrule
+\end{tabular}
+\end{table}
