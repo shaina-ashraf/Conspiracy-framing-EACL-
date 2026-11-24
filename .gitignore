@@ -11,8 +11,11 @@ env/
 .vscode/
 .idea/
 
-# Project data and generated outputs kept off GitHub
-Data/
+# Keep local/raw data off GitHub while allowing the three public release files
+Data/*
+!Data/all_classifications.csv
+!Data/all_span_annotations.csv
+!Data/all_span_annotations_with_frames.csv
 outputs/
 logs/
 plots/

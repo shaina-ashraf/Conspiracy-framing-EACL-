@@ -1,8 +1,10 @@
-# Conspiracy-Framing
+# Conspiracy Frame
 
-This repository contains code and analysis artifacts for experiments on conspiracy-theory classification and conspiracy-frame span extraction in Telegram messages.
+This repository contains the data, code, and analysis artifacts accompanying the EACL 2027 Findings paper on conspiracy-theory classification and conspiracy-frame span extraction in Telegram messages.
 
-The repository is organized for anonymous review. Raw data files, generated model outputs, logs, and model caches are not included in GitHub. The scripts expect those files in local `Data/` and `outputs/` directories when reproducing the experiments.
+The public release excludes Telegram channel identifiers, raw crawls, generated model outputs, logs, and model caches. The released annotation files use pseudonymous annotator identifiers (`A001`--`A013`).
+
+> **Content warning:** The dataset contains conspiratorial, hateful, discriminatory, and otherwise offensive language originating from public Telegram messages.
 
 ## Repository Structure
 
@@ -13,6 +15,14 @@ The repository is organized for anonymous review. Raw data files, generated mode
 - `publication/`: paper-facing prompts, tables, figures, and analysis notebooks.
 - `scripts/`: utility scripts for organizing experiment outputs.
 
+## Released Data
+
+- `Data/all_classifications.csv`: 3,243 annotations over 2,077 texts for conspiracy classification and supporting labels.
+- `Data/all_span_annotations.csv`: 934 annotations over 755 texts for the five Conspiracy Frame elements (`plan`, `secret`, `out-group`, `in-group`, and `call-to-action`).
+- `Data/all_span_annotations_with_frames.csv`: the span annotations augmented with the available FrameNet mappings for `plan` and `secret`.
+
+The FrameNet-enriched file does not contain mappings for the other three Conspiracy Frame elements because those mappings are not present in the current source data.
+
 ## Experiments
 
 The code supports two main tasks:
@@ -22,15 +32,14 @@ The code supports two main tasks:
 
 The experiments compare zero-shot, few-shot, and frame-guided prompting settings for Llama models on in-domain annotated data and out-of-domain unseen data.
 
-## Expected Local Inputs
+## Additional Local Inputs
 
-The main scripts expect project data and prompts under `Data/`, for example:
+The released annotation files are included under `Data/`. Some experiment scripts additionally expect prompts and out-of-domain inputs under paths such as:
 
-- `Data/all_classifications.csv`
 - `Data/prompts/`
 - `Data/unseen/`
 
-Generated model outputs are written under `outputs/`. These paths are excluded from version control because they can contain large generated files or data that should not be redistributed through the code repository.
+Generated model outputs are written under `outputs/`. These additional paths remain excluded from version control.
 
 ## Reproduction Notes
 
